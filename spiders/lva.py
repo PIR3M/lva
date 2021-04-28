@@ -12,16 +12,15 @@ class OldtimerSpider(Spider):
                                         formdata={  "login[username]": "fricadelles@protonmail.com",
 	                                                "login[password]": "amLsUYk3WecEhzJ",
 	                                                "send": ""},
-                                        callback=self.after_login)
+                                        callback=self.parse)
                                         
-
-    def after_login(self, response):
-        if response.xpath('//a[text()="Déconnexion"]'):
-            self.log('You are logged in')
-    
-    
     def parse(self, response):
-    
+    	if response.xpath('//a[text()="Déconnexion"]'):
+            self.log('You are logged in')
+	else:
+	    self.login(response)
+	    return
+	    
         for products in response.css('ul.cote li'):
             yield {
                     'name': products.css('strong a::text').get(),
